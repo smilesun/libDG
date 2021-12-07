@@ -8,9 +8,10 @@ from libdg.utils.utils_class import store_args
 from libdg.compos.vae.compos.decoder_concat_vec_reshape_conv_gated_conv \
     import DecoderConcatLatentFCReshapeConvGatedConv
 from libdg.compos.vae.compos.encoder import LSEncoderDense
+from libdg.models.a_model_classif import AModelClassif
+from libdg.utils.utils_classif import logit2preds_vpic, get_label_na
 
-
-class ModelXY2D(nn.Module):
+class ModelXY2D(AModelClassif):
     """
     Let zd to be continuous vector, each component of zd represents the "attention" weight.
     For a cluster, that means the bigger the $zd_k$ value, the more likely the cluster assignment
@@ -40,15 +41,15 @@ class ModelXY2D(nn.Module):
     on each component since the prior is draging each component to zero.
     """
     @store_args
-    def __init__(self, y_dim, zd_dim, gamma_y, device,
+    def __init__(self, list_str_y, y_dim, zd_dim, gamma_y, device,
                  i_c, i_h, i_w,
-                 dim_feat_x=10):
+                 dim_feat_x=10, list_str_d=None):
         """
         :param y_dim: classification task class-label dimension
         :param zd_dim: dimension of latent variable $z_d$ dimension
         :param aux_y:
         """
-        super().__init__()
+        super().__init__(list_str_y, list_str_d)
         self.infer_y_from_x = Net_MNIST(y_dim, self.i_h)
         self.feat_x2concat_y = Net_MNIST(self.dim_feat_x, self.i_h)
         # FIXME: shall we share parameters between infer_y_from_x and self.feat_x2concat_y?
@@ -61,14 +62,27 @@ class ModelXY2D(nn.Module):
             i_w=self.i_w,
             i_h=self.i_h)
 
-    def forward(self, tensor_x, vec_y):
+    def cal_logit_y(self, tensor_x):
+        """
+        calculate the logit for softmax classification
+        """
+        return 1  #FIXME
+
+    def infer_y_vpicn(self, tensor):
+        with torch.no_grad():
+            logit_y = self.infer_y_from_x(tensor)
+        vec_one_hot, prob, ind, confidence = logit2preds_vpic(logit_y)
+        na_class = get_label_na(ind, self.list_str_y)
+        return vec_one_hot, prob, ind, confidence, na_class
+
+    def forward(self, tensor_x, vec_y, vec_d=None):
         y_hat_logit = self.infer_y_from_x(tensor_x)
         feat_x = self.feat_x2concat_y(tensor_x)
         feat_y_x = torch.cat((y_hat_logit, feat_x), dim=1)
         q_zd, zd_q = self.infer_domain(feat_y_x)
         return q_zd, zd_q, y_hat_logit
 
-    def cal_loss(self, x, y):
+    def cal_loss(self, x, y, d=None):
         q_zd, zd_q, y_hat = self.forward(x, y)
         z_con = torch.cat((zd_q, y), dim=1)  # FIXME: pay attention to order
 
