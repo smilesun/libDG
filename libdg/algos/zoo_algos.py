@@ -3,6 +3,7 @@ from libdg.algos.builder_diva import NodeAlgoBuilderDIVA
 from libdg.algos.builder_deepall import NodeAlgoBuilderDeepAll
 from libdg.algos.builder_dann import NodeAlgoBuilderDANN
 from libdg.algos.builder_hduva import NodeAlgoBuilderHDUVA
+from libdg.algos.builder_m2yd import NodeAlgoBuilderM2YD
 
 
 class AlgoBuilderChainNodeGetter(object):
@@ -22,5 +23,6 @@ class AlgoBuilderChainNodeGetter(object):
         chain = NodeAlgoBuilderDeepAll(chain)
         chain = NodeAlgoBuilderDANN(chain)
         chain = NodeAlgoBuilderHDUVA(chain)
+        chain = NodeAlgoBuilderM2YD(chain)
         node = chain.handle(self.request)
         return node

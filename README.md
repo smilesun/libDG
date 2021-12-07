@@ -180,6 +180,12 @@ taskna: user defined task name
 # Design
 ![Design Diagram](libDG.svg)
 
+# Extend libDG with your own algorithm and/or contribute to libDG
+- implement libdg/algos/builder_your-algorithm-name.py
+- add your algorihtm into libdg/algos/zoo_algos.py by `chain = NodeAlgoBuilder[your-algorithm-name](chain)`
+- note that all algorithms will be converted to lower case!
+- make a pull request (optional)
+
 # Credits
 Contact: Xudong Sun (smilesun.east@gmail.com, Institute of AI for Health, Helmholtz Munich, Germany)
 

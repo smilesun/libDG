@@ -16,7 +16,7 @@ class TrainerBasic(TrainerClassif):
                 tensor_x.to(self.device), vec_y.to(self.device), vec_d.to(self.device)
             self.optimizer.zero_grad()
             loss = self.model(tensor_x, vec_y, vec_d)
-            loss = loss.sum()
+            loss = loss.sum()   # FIXME!
             loss.backward()
             self.optimizer.step()
             self.epo_loss_tr += loss.detach().item()
