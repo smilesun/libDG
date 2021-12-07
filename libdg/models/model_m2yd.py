@@ -66,7 +66,7 @@ class ModelXY2D(AModelClassif):
         """
         calculate the logit for softmax classification
         """
-        return 1  #FIXME
+        return self.infer_y_from_x(tensor_x)
 
     def infer_y_vpicn(self, tensor):
         with torch.no_grad():
