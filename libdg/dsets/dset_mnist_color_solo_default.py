@@ -15,7 +15,7 @@ class DsetMNISTColorSoloDefault(ADsetMNISTColorRGBSolo):
         if self.color_scheme == 'back':
             return self.palette[ind]
         if self.color_scheme == 'both':
-            return self.palette[-(ind-3)]
+            return self.palette[-(ind-3)]  # the foreground color will be the one at index 'ind'; so we need to choose appropriate background color
         # only array can be multiplied with number 255 directly
         return self.palette[ind]
         # "num" do not use background at all

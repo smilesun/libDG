@@ -97,7 +97,7 @@ class LSEncoderDense(nn.Module):
         self.fc_scale[0].bias.data.zero_()
 
     def forward(self, tensor_x):
-        """.
+        """
         :param tensor_x:
         """
         hidden = self.net_feat(tensor_x)
