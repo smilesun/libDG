@@ -1,4 +1,5 @@
 from libdg.algos.observers.b_obvisitor import ObVisitor
+from libdg.utils.perf_cluster import PerfCluster
 
 class ObVisitorClustering(ObVisitor):
     """

@@ -83,6 +83,8 @@ FIXME: clean up the following discussion...
 
 import numpy as np
 import torch
+from scipy.optimize import linear_sum_assignment
+from sklearn.metrics import confusion_matrix
 
 from libdg.utils.perf import PerfClassif
 
@@ -107,7 +109,8 @@ class PerfCluster(PerfClassif):
             max_batches = len(loader_te)
             fun_acc = cls.gen_fun_acc(model_local.dim_y)
         list_vec_preds, list_vec_labels = [], []
-        cost = np.zeros((args.num_domains, args.num_domains), dtype="int")  # FIXME
+        #cost = np.zeros((args.num_domains, args.num_domains), dtype="int")  # FIXME
+        cost = np.zeros((4, 4), dtype="int")  # FIXME: here hard-coded for our color mnist example; need to fix commented line above
         with torch.no_grad():
             for i, (x_s, _, d_s, *_) in enumerate(loader_te):
                 x_s, d_s = x_s.to(device), d_s.to(device)
