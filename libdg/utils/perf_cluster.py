@@ -109,16 +109,17 @@ class PerfCluster(PerfClassif):
             max_batches = len(loader_te)
             fun_acc = cls.gen_fun_acc(model_local.dim_y)
         list_vec_preds, list_vec_labels = [], []
-        #cost = np.zeros((args.num_domains, args.num_domains), dtype="int")  # FIXME
-        cost = np.zeros((4, 4), dtype="int")  # FIXME: here hard-coded for our color mnist example; need to fix commented line above
+        cost = np.zeros((model_local.zd_dim, model_local.zd_dim), dtype="int")
         with torch.no_grad():
             for i, (x_s, _, d_s, *_) in enumerate(loader_te):
                 x_s, d_s = x_s.to(device), d_s.to(device)
-                pred, *_ = model_local.infer_d_v(x_s)
+                pred = model_local.infer_d_v(x_s)
+                # asserts added mainly for debugging
+                assert pred.shape == d_s.shape
+                assert pred.shape[1] == model_local.zd_dim
 
-                # TODO: test these lines
-                cluster_pred_scalar = pred.cpu().numpy().argmax(axix=1)
-                cluster_true_scalar = d_s.cpu().numpy().argmax(axix=1)
+                cluster_pred_scalar = pred.cpu().numpy().argmax(axis=1)
+                cluster_true_scalar = d_s.cpu().numpy().argmax(axis=1)
                 cost = cost - confusion_matrix(cluster_pred_scalar, cluster_true_scalar)
 
                 list_vec_preds.append(pred)

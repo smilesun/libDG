@@ -89,10 +89,13 @@ class ModelXY2D(AModelClassif):
         na_class = get_label_na(ind, self.list_str_y)
         return vec_one_hot, prob, ind, confidence, na_class
 
-    def infer_d_v(self, tensor):
+    def infer_d_v(self, tensor_x):
         with torch.no_grad():
-            q_zd, zd_q = self.infer_domain(tensor)
-        vec_one_hot, _ = logit2preds_vpic(q_zd.mean)
+            y_hat_logit = self.infer_y_from_x(tensor_x)
+            feat_x = self.feat_x2concat_y(tensor_x)
+            feat_y_x = torch.cat((y_hat_logit, feat_x), dim=1)
+            q_zd, zd_q = self.infer_domain(feat_y_x)
+        vec_one_hot, *_ = logit2preds_vpic(q_zd.mean)
         return vec_one_hot
 
     def forward(self, tensor_x, vec_y, vec_d=None):
