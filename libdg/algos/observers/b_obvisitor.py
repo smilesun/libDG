@@ -20,6 +20,7 @@ class ObVisitor(AObVisitor):
         self.host_trainer = None
         self.loader_te = self.exp.task.loader_te
         self.loader_tr = self.exp.task.loader_tr
+        self.loader_val = self.exp.task.loader_val
         self.epo_te = self.exp.args.epo_te
         self.epo = None
         self.acc_te = None

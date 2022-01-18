@@ -74,6 +74,11 @@ class NodeTaskDGClassif(AbstractChainNodeHandler):
         return self._loader_tr
 
     @property
+    def loader_val(self):
+        """loader of validation dataset on the training domains"""
+        return self._loader_val
+
+    @property
     def loader_te(self):
         """loader of mixed test domains"""
         return self._loader_te

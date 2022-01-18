@@ -13,10 +13,9 @@ class ObVisitorClustering(ObVisitor):
             acc_tr_pool = PerfCluster.cal_acc(self.host_trainer.model, self.loader_tr, self.device)
             print("pooled train clustering acc: ", acc_tr_pool)
             # FIXME: loader_te does not have the same clusters as loader_tr (nor does it have the same number of clusters), so the following cannot be computed.. We need to adjust what loader_te is for clustering experiments...
-            #acc_te = PerfCluster.cal_acc(self.host_trainer.model, self.loader_te, self.device)
-            acc_te = None
-            self.acc_te = acc_te
-            print("clustering test acc: ", acc_te)
+            acc_val = PerfCluster.cal_acc(self.host_trainer.model, self.loader_val, self.device)
+            self.acc_val = acc_val
+            print("clustering validation acc: ", acc_val)
         return super().update(epoch)
 
     def after_all(self):
@@ -28,6 +27,6 @@ class ObVisitorClustering(ObVisitor):
         model_ld = model_ld.to(self.device)
         model_ld.eval()
         # FIXME: (Same comment as above) loader_te does not have the same clusters as loader_tr (nor does it have the same number of clusters), so the following cannot be computed.. We need to adjust what loader_te is for clustering experiments...
-        #acc_te = PerfCluster.cal_acc(model_ld, self.loader_te, self.device)
-        acc_te = None
-        print("persisted model clustering acc: ", acc_te)
+        acc_val = PerfCluster.cal_acc(model_ld, self.loader_val, self.device)
+        self.acc_val = acc_val
+        print("persisted model clustering acc: ", acc_val)
