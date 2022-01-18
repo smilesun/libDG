@@ -63,7 +63,8 @@ class MatchCtrErm(MatchAlgoBase):
             # for a single batch,  loss need to be aggregated across different combinations of
             # domains. Defining a leaf node can cause problem by loss_ctr += xxx, a list with
             # python built-in "sum" can aggregate these losses within one batch
-            logit_yhat = self.phi(x_e)  # FIXME
+            logit_yhat = self.phi(x_e)  # FIXME? or keep it like this
+            # FIXME: change to self.phi.cal_loss()
             loss_erm_rnd_loader = F.cross_entropy(logit_yhat, y_e.long()).to(self.device)
 
             num_batches = len(tuple_tensor_refdomain2each)
@@ -83,7 +84,7 @@ class MatchCtrErm(MatchAlgoBase):
                 batch_tensor_ref_domain2each.shape[4])
             # now batch_tensor_ref_domain2each first dim will not be batch_size!
             # batch_tensor_ref_domain2each.shape torch.Size([40, channel, 224, 224])
-            batch_feat_ref_domain2each = self.phi(batch_tensor_ref_domain2each)
+            batch_feat_ref_domain2each = self.phi(batch_tensor_ref_domain2each)   # FIXME: change to self.phi.extract_feat(...)
             # batch_feat_ref_domain2each.shape torch.Size[40, 512]
             # torch.sum(torch.isnan(batch_tensor_ref_domain2each))
             # assert not torch.sum(torch.isnan(batch_feat_ref_domain2each))
@@ -95,6 +96,7 @@ class MatchCtrErm(MatchAlgoBase):
             batch_ref_domain2each_y = tuple_tensor_ref_domain2each_y[batch_idx].to(self.device)
             batch_ref_domain2each_y = batch_ref_domain2each_y.view(batch_ref_domain2each_y.shape[0]*batch_ref_domain2each_y.shape[1])
 
+            # FIXME: change to self.phi.cal_loss()
             loss_erm_match_tensor = F.cross_entropy(batch_feat_ref_domain2each, batch_ref_domain2each_y.long()).to(self.device)
 
             # Creating tensor of shape (domain size, total domains, feat size )
