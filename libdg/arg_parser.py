@@ -4,6 +4,7 @@ Command line arguments
 import argparse
 import warnings
 from libdg.models.args_vae import add_args2parser_vae
+from libdg.algos.compos.matchdg_args import add_args2parser_matchdg
 
 
 def mk_parser_main():
@@ -24,8 +25,8 @@ def mk_parser_main():
     parser.add_argument('--nocu', action='store_true', default=False,
                         help='disables CUDA')
 
-    parser.add_argument('--nogen', action='store_true', default=False,
-                        help='do not save generated images')
+    parser.add_argument('--gen', action='store_true', default=False,
+                        help='save generated images')
 
     parser.add_argument('--keep_model', action='store_true', default=False,
                         help='do not delete model at the end of training')
@@ -82,6 +83,8 @@ def mk_parser_main():
 
     arg_group_vae = parser.add_argument_group('vae')
     arg_group_vae = add_args2parser_vae(arg_group_vae)
+    arg_group_matchdg = parser.add_argument_group('matchdg')
+    arg_group_matchdg = add_args2parser_matchdg(arg_group_matchdg)
     return parser
 
 
