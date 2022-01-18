@@ -65,6 +65,9 @@ class ModelHDUVA(VAEXYDClassif):
         return prior
 
     def forward(self, x, y, d=None):
+        return self.cal_loss(x, y, d)
+
+    def cal_loss(self, x, y, d=None):
         """
         :param x:
         :param y:
