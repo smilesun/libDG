@@ -10,9 +10,9 @@ from libdg.dsets.utils_color_palette import default_rgb_palette   # FIXME
 from libdg.utils.utils_classif import mk_dummy_label_list_str
 
 
-class NodeTaskMNISTColor4(NodeTaskDict):
+class NodeTaskMNISTColor(NodeTaskDict):
     """
-    Use the first 4 colors of the deafult palette
+    Use the deafult palette with 10 colors
     """
     @property
     def list_str_y(self):
@@ -29,7 +29,7 @@ class NodeTaskMNISTColor4(NodeTaskDict):
         2. better use method than property so new domains can be added
         """
         list_domains = []
-        for rgb_list in default_rgb_palette[:4]:   # FIXME:
+        for rgb_list in default_rgb_palette:   # 10 colors
             domain = "_".join([str(c) for c in rgb_list])
             domain = "rgb_" + domain
             list_domains.append(domain)
