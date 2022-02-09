@@ -43,7 +43,7 @@ class NodeTaskDict(NodeTaskDGClassif):
         """
         create a dictionary of datasets
         """
-        list_domain_tr, list_domain_te = self.get_list_domains_tr_te(args.te_d)
+        list_domain_tr, list_domain_te = self.get_list_domains_tr_te(args.tr_d, args.te_d)
         self.dict_dset = dict()
         self.dict_dset_val = dict()
         dim_d = len(list_domain_tr)
