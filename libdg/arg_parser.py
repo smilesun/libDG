@@ -83,8 +83,8 @@ def mk_parser_main():
 
     arg_group_task.add_argument('--tr_d', nargs='*', default=None,
                                 help='training domain names separated by single space, \
-                                will be parsed to be list of strings; if not provided
-                                then all available domains that are not assigned to
+                                will be parsed to be list of strings; if not provided \
+                                then all available domains that are not assigned to \
                                 the test set will be used as training domains')
 
     arg_group_vae = parser.add_argument_group('vae')
