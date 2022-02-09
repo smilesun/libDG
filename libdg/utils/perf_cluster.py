@@ -127,9 +127,12 @@ class PerfCluster(PerfClassif):
                 if i > max_batches:
                     break
         # FIXME: need to check cluster assignment orders. the domain label is never used in training. so we need to find correspondence between predicted and true domain indices. See top of this file.
-        ## What is the best permutation?
-        row_ind, col_ind = linear_sum_assignment(cost)
-        # Accuracy for best permutation:
-        acc_d = cost[row_ind, col_ind].sum() / cost.sum()
 
-        return acc_d
+        # What is the best permutation?
+        row_ind, col_ind = linear_sum_assignment(cost)
+        # Note that row_ind will be equal to [0, 1, ..., cost.shape[0]] because cost is a square matrix.
+        conf_mat = (-1)*cost[:, col_ind]
+        # Accuracy for best permutation:
+        acc_d = np.diag(conf_mat).sum() / conf_mat.sum()
+
+        return acc_d, conf_mat
