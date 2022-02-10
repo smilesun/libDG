@@ -4,28 +4,18 @@ from torch import nn
 from torch.nn import Parameter
 import torch.nn.functional as F
 from torch.nn.modules.utils import _pair  # repeat argument like kernel size
-
-
-class FlattenLayer(nn.Module):
-
-    def __init__(self, num_features):
-        super(FlattenLayer, self).__init__()
-        self.num_features = num_features
-
-    def forward(self, x):
-        return x.view(-1, self.num_features)
+from libdg.models.bnn.BBBdistributions import Normal, Normalout, distribution_selector
 
 
 class ConvNdBase(nn.Module):
     """
-    Describes a Bayesian convolutional layer with
-    a distribution over each of the weights and biases
-    in the layer.
+    Bayesian convolutional layer with a distribution over the weights and biases
+    The base class allows N-dim convolution although we normally use only 2d convolution.
     """
 
     def __init__(self, in_channels, out_channels, kernel_size, stride,
-                 padding, dilation, output_padding, groups,
-                 p_logvar_init=-3,
+                 padding=2, dilation=1, groups=1,
+                 p_logvar_init=-3,  # FIXME: are performances sensitive to this as well?
                  p_pi=1.0,
                  q_logvar_init=-5):
         super().__init__()
@@ -40,7 +30,6 @@ class ConvNdBase(nn.Module):
         self.stride = stride
         self.padding = padding
         self.dilation = dilation
-        self.output_padding = output_padding
         self.groups = groups
 
         # initialize log variance of p and q
@@ -54,25 +43,18 @@ class ConvNdBase(nn.Module):
         # network weight connect input $i$
         # to output $j$
         # E(b_{mj})=\sum_i a_{mi}u_{i,j}
-        # torch.F.linear(input, weight) requires weight to be defined in the following way
-        self.qw_mean = Parameter(torch.Tensor(out_channels, in_channels // groups, *kernel_size))
-        self.qw_logvar = Parameter(torch.Tensor(out_channels, in_channels // groups, *kernel_size))
+        # torch.F.linear(input, weight) requires weight to be defined
+        # in the following way
+        self.qw_mean = Parameter(
+            torch.Tensor(out_channels, in_channels // groups, *kernel_size))
+        self.qw_logvar = Parameter(
+            torch.Tensor(out_channels, in_channels // groups, *kernel_size))
+
+        self.qw = Normal(mu=self.qw_mean, logvar=self.qw_logvar)
 
         # optionally add bias
         # self.qb_mean = Parameter(torch.Tensor(out_channels))
         # self.qb_logvar = Parameter(torch.Tensor(out_channels))
-
-        # ...and output...
-        # FIXME: not used
-        self.conv_qw_mean = Parameter(torch.Tensor(out_channels, in_channels // groups, *kernel_size))
-        self.conv_qw_std = Parameter(torch.Tensor(out_channels, in_channels // groups, *kernel_size))
-
-        # ...as normal distributions
-        # FIXME: not used
-        self.qw = Normal(mu=self.qw_mean, logvar=self.qw_logvar)
-        # self.qb = Normal(mu=self.qb_mean, logvar=self.qb_logvar)
-
-        self.conv_qw = Normalout(mu=self.conv_qw_mean, std=self.conv_qw_std)
 
         # initialise
         self.log_alpha = Parameter(torch.Tensor(1, 1))
@@ -86,17 +68,15 @@ class ConvNdBase(nn.Module):
         self.reset_parameters()
 
     def reset_parameters(self):
-        # initialise (learnable) approximate posterior parameters
+        # uniforme initialization to weight
         n = self.in_channels
         for k in self.kernel_size:
             n *= k
         stdv = 1. / math.sqrt(n)
         self.qw_mean.data.uniform_(-stdv, stdv)
         self.qw_logvar.data.uniform_(-stdv, stdv).add_(self.q_logvar_init)
-
-        # self.qb_mean.data.uniform_(-stdv, stdv)
-        # self.qb_logvar.data.uniform_(-stdv, stdv).add_(self.q_logvar_init)
-
-        self.conv_qw_mean.data.uniform_(-stdv, stdv)
-        self.conv_qw_std.data.uniform_(-stdv, stdv).add_(self.q_logvar_init)
         self.log_alpha.data.uniform_(-stdv, stdv)
+
+
+def test_BNdConv():
+    net = ConvNdBase(4, 5, (3, 1), 1)

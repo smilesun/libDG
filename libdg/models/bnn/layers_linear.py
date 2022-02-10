@@ -1,5 +1,12 @@
+import math
 import torch
+import torch.nn.functional as F
+from torch.nn import Parameter
 from torch import nn
+
+from libdg.models.bnn.BBBdistributions import Normal, Normalout, distribution_selector
+
+
 class BBBLinearFactorial(nn.Module):
     """
     Describes a Linear fully connected Bayesian layer with
@@ -68,6 +75,7 @@ class BBBLinearFactorial(nn.Module):
 
         fc_qw_mean = F.linear(input=input, weight=self.qw_mean)
         fc_qw_si = torch.sqrt(1e-8 + F.linear(input=input.pow(2), weight=torch.exp(self.log_alpha)*self.qw_mean.pow(2)))
+        cuda = True
 
         if cuda:
             fc_qw_mean.cuda()
@@ -95,3 +103,13 @@ class BBBLinearFactorial(nn.Module):
         return self.__class__.__name__ + ' (' \
                + str(self.in_features) + ' -> ' \
                + str(self.out_features) + ')'
+
+
+class FlattenLayer(nn.Module):
+
+    def __init__(self, num_features):
+        super(FlattenLayer, self).__init__()
+        self.num_features = num_features
+
+    def forward(self, x):
+        return x.view(-1, self.num_features)

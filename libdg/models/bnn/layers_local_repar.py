@@ -9,8 +9,9 @@ from libdg.models.bnn.BBBdistributions import Normal, Normalout, distribution_se
 from libdg.models.bnn.layers_base import ConvNdBase
 
 
-class BBBConv2d(ConvNdBase):
-    def __init__(self, in_channels, out_channels, kernel_size, stride=1,
+class LayerBConv2d(ConvNdBase):
+    def __init__(self, in_channels, out_channels, kernel_size,
+                 stride=1,
                  padding=0, dilation=1, groups=1):
 
         kernel_size = _pair(kernel_size)
@@ -18,7 +19,8 @@ class BBBConv2d(ConvNdBase):
         padding = _pair(padding)
         dilation = _pair(dilation)
 
-        super(BBBConv2d, self).__init__(in_channels, out_channels, kernel_size, stride, padding, dilation, _pair(0), groups)
+        super().__init__(in_channels, out_channels, kernel_size,
+                         stride, padding, dilation, groups)
 
     def forward(self, input):
         raise NotImplementedError()
@@ -31,28 +33,32 @@ class BBBConv2d(ConvNdBase):
         """
 
         # local reparameterization trick for convolutional layer
-        conv_qw_mean = F.conv2d(input=input.float(), weight=self.qw_mean, stride=self.stride, padding=self.padding,
-                                dilation=self.dilation, groups=self.groups)
-        conv_qw_std = torch.sqrt(1e-8 + F.conv2d(input=input.float().pow(2), weight=torch.exp(self.log_alpha)*self.qw_mean.pow(2),
-                                                 stride=self.stride, padding=self.padding, dilation=self.dilation, groups=self.groups))
+        output_mean = F.conv2d(input=input.float(),
+                                weight=self.qw_mean,  # set at parent class
+                                stride=self.stride,
+                                padding=self.padding,
+                                dilation=self.dilation,
+                                groups=self.groups)
 
-        if cuda:
-            conv_qw_mean.cuda()
-            conv_qw_std.cuda()
+        output_std = torch.sqrt(1e-8 + F.conv2d(input=input.float().pow(2),  #\sum_i \sigma_{ij}^2*a_{mi}^2
+                                                # receptive field also get powered
+                                                # let m be instance index
+                                                # j be output index
+                                                #  \sum_i \sigma_{ij}^2*a_{mi}^2
+                                                weight=torch.exp(self.log_alpha)*self.qw_mean.pow(2),
+                                                # mean=exp(u+\sigma^2), var = exp(2u+\sigma^2)[exp(sigma^2)-1]=mean^2*alpha
+                                                stride=self.stride,
+                                                padding=self.padding,
+                                                dilation=self.dilation,
+                                                groups=self.groups))
+        epsilon = torch.randn(output_mean.size())
+        epsilon = epsilon.to(output_mean.device)
+        output = output_mean + output_std * epsilon
 
-        # sample from output
-        if cuda:
-            output = conv_qw_mean + conv_qw_std * (torch.randn(conv_qw_mean.size())).cuda()
-        else:
-            output = conv_qw_mean + conv_qw_std * (torch.randn(conv_qw_mean.size()))
-
-        if cuda:
-            output.cuda()
-
-        w_sample = self.conv_qw.sample()
+        w_sample = self.qw.sample()
 
         # KL divergence
-        qw_logpdf = self.conv_qw.logpdf(w_sample)
+        qw_logpdf = self.qw.logpdf(w_sample)
 
         kl = torch.sum(qw_logpdf - self.pw.logpdf(w_sample))
 
@@ -116,7 +122,8 @@ class BBBLinearFactorial(nn.Module):
         self.log_alpha.data.uniform_(-stdv, stdv)
 
     def forward(self, input):
-        raise NotImplementedError()
+        #raise NotImplementedError()
+        return self.fcprobforward(input)
 
     def fcprobforward(self, input):
         """
@@ -150,7 +157,9 @@ class BBBLinearFactorial(nn.Module):
 
         return output, kl
 
-    def __repr__(self):
-        return self.__class__.__name__ + ' (' \
-               + str(self.in_features) + ' -> ' \
-               + str(self.out_features) + ')'
+def test_Conv2dB():
+    img = torch.randn(20, 3, 28, 28)
+    img = img.cuda()
+    net = LayerBConv2d(3, 5, 3)
+    net = net.cuda()
+    output, kl = net.convprobforward(img)
