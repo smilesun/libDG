@@ -103,13 +103,3 @@ class BBBLinearFactorial(nn.Module):
         return self.__class__.__name__ + ' (' \
                + str(self.in_features) + ' -> ' \
                + str(self.out_features) + ')'
-
-
-class FlattenLayer(nn.Module):
-
-    def __init__(self, num_features):
-        super(FlattenLayer, self).__init__()
-        self.num_features = num_features
-
-    def forward(self, x):
-        return x.view(-1, self.num_features)

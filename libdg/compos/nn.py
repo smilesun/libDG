@@ -15,6 +15,15 @@ class LayerId(nn.Module):
         return x
 
 
+class LayerFlat(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, x):
+        batch_size = x.shape[0]
+        return x.view(batch_size, -1)
+
+
 class DenseNet(nn.Module):
     """
     (input)-dropout-linear-relu-dropout-linear-relu(output)
