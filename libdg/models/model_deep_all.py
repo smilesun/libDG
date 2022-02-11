@@ -62,8 +62,11 @@ class ModelBNN(ModelDeepAll):
             y_target = tensor_y
         else:
             _, y_target = tensor_y.max(dim=1)
-        lc_y = F.cross_entropy(logit_y, y_target, reduction="none")
-        return lc_y + loss_kl
+        if len(loss_kl.size()) == 0:
+            lc_y = F.cross_entropy(logit_y, y_target, reduction="sum")
+        else:
+            lc_y = F.cross_entropy(logit_y, y_target, reduction="none")
+        return lc_y
 
     def infer_y_vpicn(self, tensor):
         with torch.no_grad():

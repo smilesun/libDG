@@ -33,8 +33,12 @@ class NodeAlgoBuilderDeepAll(NodeAlgoBuilder):
             else:
                 raise RuntimeError("Please implement a function build_net \
                                    in your python file refered by -mpath")
-            model = ModelBNN(net, list_str_y=task.list_str_y,
-                             net_builder=net_module.build_net, task=task)
+            if hasattr(net, "probforward"):
+                model = ModelBNN(net, list_str_y=task.list_str_y,
+                                 net_builder=net_module.build_net, task=task)
+            else:
+                model = ModelDeepAll(net, list_str_y=task.list_str_y)
+
         else:
             net = Alex4DeepAll(flag_pretrain=True, dim_y=task.dim_y)
             model = ModelDeepAll(net, list_str_y=task.list_str_y)
