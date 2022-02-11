@@ -66,7 +66,7 @@ class ModelBNN(ModelDeepAll):
             lc_y = F.cross_entropy(logit_y, y_target, reduction="sum")
         else:
             lc_y = F.cross_entropy(logit_y, y_target, reduction="none")
-        return lc_y
+        return lc_y + loss_kl
 
     def infer_y_vpicn(self, tensor):
         with torch.no_grad():
