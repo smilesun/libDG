@@ -1,5 +1,6 @@
 python main_out.py --te_d=0 --task=mnistcolor4 --keep_model
-python main_out.py --te_d=caltech --task=mini_vlcs --debug --bs=2 --nocu
+python main_out.py --te_d=0 --aname=deepall --task=mnistcolor4 --mpath=./libdg/models/bnn/Bayesian3Conv3FC.py
+python main_out.py --te_d=caltech --task=mini_vlcs --debug --bs=35 --nocu
 python main_out.py --te_d=caltech --tpath=libdg/zoo/task_vlcs.py --debug --bs=2 --nocu
 python main_out.py --te_d=caltech --task=mini_vlcs --debug --bs=42 --aname=deepall
 python main_out.py --te_d=caltech --task=mini_vlcs --debug --bs=20 --aname=dann

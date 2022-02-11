@@ -37,7 +37,6 @@ class ObVisitor(AObVisitor):
         if self.model_sel.update():
             print("model selected")
             self.exp.visitor.save(self.host_trainer.model)
-            print("persisted")
         return self.model_sel.if_stop()
 
     def accept(self, trainer):

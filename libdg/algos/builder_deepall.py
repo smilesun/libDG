@@ -5,7 +5,8 @@ from libdg.algos.msels.c_msel_oracle import MSelOracleVisitor
 from libdg.algos.observers.b_obvisitor import ObVisitor
 from libdg.utils.utils_cuda import get_device
 from libdg.compos.nn_alex import Alex4DeepAll
-from libdg.models.model_deep_all import ModelDeepAll
+from libdg.models.model_deep_all import ModelDeepAll, ModelBNN
+from libdg.utils.u_import import import_path
 
 
 class NodeAlgoBuilderDeepAll(NodeAlgoBuilder):
@@ -17,7 +18,25 @@ class NodeAlgoBuilderDeepAll(NodeAlgoBuilder):
         args = exp.args
         device = get_device(args.nocu)
         observer = ObVisitor(exp, MSelOracleVisitor(MSelTrLoss(max_es=args.es)), device)
-        net = Alex4DeepAll(flag_pretrain=True, dim_y=task.dim_y)
-        model = ModelDeepAll(net, list_str_y=task.list_str_y)
+        if args.mpath is not None:
+            net_module = import_path(args.mpath)
+            if hasattr(net_module, "build_net"):
+                try:
+                    net = net_module.build_net(task.dim_y, task.isize.i_c, task.isize.i_h, task.isize.i_w)
+                except Exception:
+                    print("function build_net(dim_y, i_c, i_h, i_w) should return a neural network that \
+                          that classifies dim_y classes, with image channel i_c, height i_h, width i_w")
+                    raise
+
+                if net is None:
+                    raise RuntimeError("Please return the pytorch module you have implemented in build_net")
+            else:
+                raise RuntimeError("Please implement a function build_net \
+                                   in your python file refered by -mpath")
+            model = ModelBNN(net, list_str_y=task.list_str_y,
+                             net_builder=net_module.build_net, task=task)
+        else:
+            net = Alex4DeepAll(flag_pretrain=True, dim_y=task.dim_y)
+            model = ModelDeepAll(net, list_str_y=task.list_str_y)
         trainer = TrainerBasic(model, task, observer, device, args)
         return trainer

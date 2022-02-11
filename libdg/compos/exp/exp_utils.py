@@ -1,6 +1,7 @@
 import abc
 import os
 import datetime
+import copy
 from pathlib import Path
 
 import torch
@@ -58,7 +59,17 @@ class ExpModelPersistVisitor():
         file_na = self.model_path
         if suffix is not None:
             file_na = "_".join([file_na, suffix])
-        torch.save(model, file_na)
+        try:
+            print("skip pickle")
+            # torch.save(model, file_na)
+            # print("persisted")
+        except Exception:
+            pass
+            # FIXME
+            model_copied = copy.deepcopy(model)
+            model_copied.set_net(model._clone_net())
+            torch.save(model_copied, file_na)
+
 
     def remove(self, suffix=None):
         """

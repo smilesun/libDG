@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 
 
@@ -21,7 +22,9 @@ class LayerFlat(nn.Module):
 
     def forward(self, x):
         batch_size = x.shape[0]
-        return x.view(batch_size, -1)
+        xx = x.view(batch_size, -1)
+        xxx = torch.squeeze(xx)
+        return xxx
 
 
 class DenseNet(nn.Module):
