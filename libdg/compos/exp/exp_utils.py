@@ -78,7 +78,10 @@ class ExpModelPersistVisitor():
         file_na = self.model_path
         if suffix is not None:
             file_na = "_".join([file_na, suffix])
-        os.remove(file_na)
+        try:
+            os.remove(file_na)
+        except:
+            print("no model to remove from disk or remove failed")
 
     def load(self, suffix=None):
         """
