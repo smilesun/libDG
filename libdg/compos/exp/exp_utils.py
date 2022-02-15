@@ -87,7 +87,11 @@ class ExpModelPersistVisitor():
         path = self.model_path
         if suffix is not None:
             path = "_".join([self.model_path, suffix])
-        model = torch.load(path, map_location="cpu")
+        try:
+            model = torch.load(path, map_location="cpu")
+        except Exception:
+            print("model has not been saved during the optimzation")
+            model = None
         return model
 
 

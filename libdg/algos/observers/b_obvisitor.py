@@ -51,12 +51,15 @@ class ObVisitor(AObVisitor):
         After training is done
         """
         self.exp.visitor.save(self.host_trainer.model, "final")
-        model_ld = self.exp.visitor.load()
-        model_ld = model_ld.to(self.device)
-        model_ld.eval()
-        acc_te = PerfClassif.cal_acc(model_ld, self.loader_te, self.device)
-        print("persisted model acc: ", acc_te)
-        self.exp.visitor(acc_te)
+        try:
+            model_ld = self.exp.visitor.load()
+            model_ld = model_ld.to(self.device)
+            model_ld.eval()
+            acc_te = PerfClassif.cal_acc(model_ld, self.loader_te, self.device)
+            print("persisted model acc: ", acc_te)
+            self.exp.visitor(acc_te)
+        except:
+            print("unable to evalute selected model, probably because model not saved")
 
     def clean_up(self):
         """
