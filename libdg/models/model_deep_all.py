@@ -70,7 +70,7 @@ class ModelBNN(ModelDeepAll):
 
     def infer_y_vpicn(self, tensor):
         with torch.no_grad():
-            logit_y, _ = self.net(tensor)
+            logit_y = self.net.deterministic_forward(tensor)
         vec_one_hot, prob, ind, confidence = logit2preds_vpic(logit_y)
         na_class = get_label_na(ind, self.list_str_y)
         return vec_one_hot, prob, ind, confidence, na_class

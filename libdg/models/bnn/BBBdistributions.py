@@ -38,6 +38,7 @@ class Normal(Distribution):
 
     def logpdf(self, x):
         c = - float(0.5 * math.log(2 * math.pi))
+        # \frac{1}{\sigma*(2*\pi)^(1/2)}exp[-(x-u)^2/(sigma^2)]
         return c - 0.5 * self.logvar - (x - self.mu).pow(2) / (2 * torch.exp(self.logvar))
 
     def pdf(self, x):
@@ -49,6 +50,7 @@ class Normal(Distribution):
         else:
             eps = torch.FloatTensor(self.shape).normal_()
         # local reparameterization trick
+        # mu + \sqrt{var}*eps
         return self.mu + torch.exp(0.5 * self.logvar) * eps
 
     def entropy(self):

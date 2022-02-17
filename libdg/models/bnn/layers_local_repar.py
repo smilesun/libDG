@@ -25,6 +25,17 @@ class LayerBConv2d(ConvNdBase):
     def forward(self, input):
         raise NotImplementedError()
 
+    def deterministic_forward(self, input):
+        output_mean = F.conv2d(input=input.float(),
+                                weight=self.qw_mean,  # set at parent class
+                                stride=self.stride,
+                                padding=self.padding,
+                                dilation=self.dilation,
+                                groups=self.groups)
+        return output_mean
+
+
+
     def convprobforward(self, input):
         """
         Convolutional probabilistic forwarding method.
@@ -45,8 +56,9 @@ class LayerBConv2d(ConvNdBase):
                                                 # let m be instance index
                                                 # j be output index
                                                 #  \sum_i \sigma_{ij}^2*a_{mi}^2
-                                                weight=torch.exp(self.log_alpha)*self.qw_mean.pow(2),
-                                                # mean=exp(u+\sigma^2), var = exp(2u+\sigma^2)[exp(sigma^2)-1]=mean^2*alpha
+                                                #weight=torch.exp(self.log_alpha)*self.qw_mean.pow(2),
+                                                weight=torch.exp(self.qw_logvar),
+                                                # mean=exp(u+\sigma^2/2), var = exp(2u+\sigma^2)[exp(sigma^2)-1]=mean^2*alpha
                                                 stride=self.stride,
                                                 padding=self.padding,
                                                 dilation=self.dilation,

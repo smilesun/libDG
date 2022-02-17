@@ -69,6 +69,18 @@ class NetBayes2ConvFC(nn.Module):
         # print('logits', logits)
         return logits, kl
 
+    def deterministic_forward(self, x):
+        for layer in self.layers:
+            if hasattr(layer, 'convprobforward') or \
+                    hasattr(layer, 'fcprobforward'):
+                x = layer.deterministic_forward(x)
+            else:
+                x = layer(x)
+        logits = x
+        # print('logits', logits)
+        return logits
+
+
 
 def build_net(dim_y, i_c, i_h, i_w):
     """build_net."""

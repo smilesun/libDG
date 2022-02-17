@@ -1,7 +1,7 @@
 # The bayes version
 python main_out.py --te_d=0 --aname=deepall --task=mnistcolor4 --mpath=./libdg/models/bnn/B_net_small.py --epos=500
 # The frequenst version, the same architecture
-python main_out.py --te_d=0 --aname=deepall --task=mnistcolor4 --mpath=./libdg/models/bnn/F_net_small.py --epos=500
+python main_out.py --te_d=31 --aname=deepall --task=mnistcolor4 --mpath=./libdg/models/bnn/F_net_small.py --epos=500
 
 # Now we do not use batchnorm
 # The bayes version

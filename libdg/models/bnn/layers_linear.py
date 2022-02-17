@@ -66,6 +66,10 @@ class BBBLinearFactorial(nn.Module):
     def forward(self, input):
         raise NotImplementedError()
 
+    def deterministic_forward(self, input):
+        fc_qw_mean = F.linear(input=input, weight=self.qw_mean)
+        return fc_qw_mean
+
     def fcprobforward(self, input):
         """
         Probabilistic forwarding method.
@@ -74,7 +78,8 @@ class BBBLinearFactorial(nn.Module):
         """
 
         fc_qw_mean = F.linear(input=input, weight=self.qw_mean)
-        fc_qw_si = torch.sqrt(1e-8 + F.linear(input=input.pow(2), weight=torch.exp(self.log_alpha)*self.qw_mean.pow(2)))
+        #fc_qw_si = torch.sqrt(1e-8 + F.linear(input=input.pow(2), weight=torch.exp(self.log_alpha)*self.qw_mean.pow(2)))
+        fc_qw_si = torch.sqrt(1e-8 + F.linear(input=input.pow(2), weight=torch.exp(self.qw_logvar)))
         cuda = True
 
         if cuda:
@@ -90,10 +95,10 @@ class BBBLinearFactorial(nn.Module):
         if cuda:
             output.cuda()
 
-        w_sample = self.fc_qw.sample()
+        w_sample = self.qw.sample()
 
         # KL divergence
-        qw_logpdf = self.fc_qw.logpdf(w_sample)
+        qw_logpdf = self.qw.logpdf(w_sample)
 
         kl = torch.sum(qw_logpdf - self.pw.logpdf(w_sample))
 
