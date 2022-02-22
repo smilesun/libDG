@@ -28,7 +28,7 @@ class NodeTaskMNISTColor4(NodeTaskDict):
         2. better use method than property so new domains can be added
         """
         list_domains = []
-        for rgb_list in default_rgb_palette[:4]:   # FIXME:
+        for rgb_list in default_rgb_palette[:2]:   # FIXME:
             domain = "_".join([str(c) for c in rgb_list])
             domain = "rgb_" + domain
             list_domains.append(domain)

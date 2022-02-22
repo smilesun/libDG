@@ -47,6 +47,7 @@ class BBBLinearFactorial(nn.Module):
 
         # prior model
         self.pw = distribution_selector(mu=0.0, logvar=p_logvar_init, pi=p_pi)
+        #self.pw = distribution_selector(mu=(0.0, -1, +1), logvar=(-1, -3, -8), pi=(0.3, 0.5, 0.2))
         # self.pb = distribution_selector(mu=0.0, logvar=p_logvar_init, pi=p_pi)
 
         # initialize all paramaters
@@ -78,7 +79,7 @@ class BBBLinearFactorial(nn.Module):
         """
 
         fc_qw_mean = F.linear(input=input, weight=self.qw_mean)
-        #fc_qw_si = torch.sqrt(1e-8 + F.linear(input=input.pow(2), weight=torch.exp(self.log_alpha)*self.qw_mean.pow(2)))
+        # fc_qw_si = torch.sqrt(1e-8 + F.linear(input=input.pow(2), weight=torch.exp(self.log_alpha)*self.qw_mean.pow(2)))
         fc_qw_si = torch.sqrt(1e-8 + F.linear(input=input.pow(2), weight=torch.exp(self.qw_logvar)))
         cuda = True
 

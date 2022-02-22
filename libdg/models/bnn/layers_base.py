@@ -62,6 +62,7 @@ class ConvNdBase(nn.Module):
         # prior model
         # (does not have any trainable parameters so we use fixed normal or fixed mixture normal distributions)
         self.pw = distribution_selector(mu=0.0, logvar=p_logvar_init, pi=p_pi)
+        # self.pw = distribution_selector(mu=(0.0, -1, +1), logvar=(-1, -8, -3), pi=[0.3, 0.5, 0.2])
         # self.pb = distribution_selector(mu=0.0, logvar=p_logvar_init, pi=p_pi)
 
         # initialize all parameters

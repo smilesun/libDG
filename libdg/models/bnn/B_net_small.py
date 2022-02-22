@@ -31,10 +31,12 @@ class NetBayes2ConvFC(nn.Module):
         self.h_dim = x.shape[1]
         self.fc1 = BBBLinearFactorial(self.h_dim, 1000)
         #self.fc1 = BBBLinearFactorial(2 * 2 * 128, 1000)  # only for 32*32 image
-        self.soft5 = nn.Softplus()
+        #self.soft5 = nn.Softplus()
+        self.soft5 = nn.ReLU()
 
         self.fc2 = BBBLinearFactorial(1000, 1000)
-        self.soft6 = nn.Softplus()
+        #self.soft6 = nn.Softplus()
+        self.soft6 = nn.ReLU()
 
         self.fc3 = BBBLinearFactorial(1000, outputs)
 

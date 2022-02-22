@@ -9,7 +9,8 @@ from libdg.utils.utils_classif import logit2preds_vpic, get_label_na
 class ModelDeepAll(AModelClassif):
     def __init__(self, net, list_str_y, list_str_d=None):
         super().__init__(list_str_y, list_str_d)
-        self.net = net
+        self.add_module("net", net)
+        # self.net = net
 
     def cal_logit_y(self, tensor_x):
         """
@@ -66,11 +67,13 @@ class ModelBNN(ModelDeepAll):
             lc_y = F.cross_entropy(logit_y, y_target, reduction="sum")
         else:
             lc_y = F.cross_entropy(logit_y, y_target, reduction="none")
-        return lc_y + loss_kl
+        return lc_y, loss_kl
 
     def infer_y_vpicn(self, tensor):
         with torch.no_grad():
-            logit_y = self.net.deterministic_forward(tensor)
+            #logit_y = self.net.deterministic_forward(tensor)
+            tensor = tensor.repeat(11, 1, 1, 1)
+            logit_y, _ = self.net(tensor)
         vec_one_hot, prob, ind, confidence = logit2preds_vpic(logit_y)
         na_class = get_label_na(ind, self.list_str_y)
         return vec_one_hot, prob, ind, confidence, na_class

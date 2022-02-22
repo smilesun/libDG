@@ -3,7 +3,7 @@ import numpy as np
 import torch
 
 
-class PerfClassif():
+class PerfClassifBnn():
     """Classification Performance"""
     @classmethod
     def gen_fun_acc(cls, dim_target):

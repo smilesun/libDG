@@ -73,6 +73,7 @@ class LayerBConv2d(ConvNdBase):
         qw_logpdf = self.qw.logpdf(w_sample)
 
         kl = torch.sum(qw_logpdf - self.pw.logpdf(w_sample))
+        # kl = qw_logpdf - self.pw.logpdf(w_sample)
 
         return output, kl
 
