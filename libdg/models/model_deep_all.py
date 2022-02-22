@@ -45,6 +45,7 @@ class ModelBNN(ModelDeepAll):
         super().__init__(net, list_str_y, list_str_d)
         self.net_builder = net_builder
         self.task = task
+        self.num_repeats = 100
 
     def set_net(self, net):
         self.net = net
@@ -72,7 +73,7 @@ class ModelBNN(ModelDeepAll):
     def infer_y_vpicn(self, tensor):
         with torch.no_grad():
             #logit_y = self.net.deterministic_forward(tensor)
-            tensor = tensor.repeat(11, 1, 1, 1)
+            tensor = tensor.repeat(self.num_repeats, 1, 1, 1)
             logit_y, _ = self.net(tensor)
         vec_one_hot, prob, ind, confidence = logit2preds_vpic(logit_y)
         na_class = get_label_na(ind, self.list_str_y)
