@@ -4,6 +4,7 @@ from libdg.algos.builder_deepall import NodeAlgoBuilderDeepAll
 from libdg.algos.builder_dann import NodeAlgoBuilderDANN
 from libdg.algos.builder_hduva import NodeAlgoBuilderHDUVA
 from libdg.algos.builder_matchdg import NodeAlgoBuilderMatchDG
+from libdg.algos.builder_matchdg_hdiva import NodeAlgoBuilderMatchDGDIVA
 
 
 class AlgoBuilderChainNodeGetter(object):
@@ -24,5 +25,6 @@ class AlgoBuilderChainNodeGetter(object):
         chain = NodeAlgoBuilderDANN(chain)
         chain = NodeAlgoBuilderHDUVA(chain)
         chain = NodeAlgoBuilderMatchDG(chain)
+        chain = NodeAlgoBuilderMatchDGDIVA(chain)
         node = chain.handle(self.request)
         return node
