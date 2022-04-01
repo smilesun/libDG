@@ -50,7 +50,7 @@ class NodeTaskDict(NodeTaskDGClassif):
             dset = self.get_dset_by_domain(args, na_domain)
             vec_domain = mk_onehot(dim_d, ind_domain_dummy)
             ddset = DsetDomainVecDecorator(dset, vec_domain, na_domain)
-            if args.aname == "matchdg":  # FIXME: are there ways not to use this if statement?
+            if "match" in args.aname:  # FIXME: are there ways not to use this if statement?
                 ddset = DsetIndDecorator4XYD(ddset)
             self.dict_dset.update({na_domain: ddset})
         ddset_mix = ConcatDataset(tuple(self.dict_dset.values()))

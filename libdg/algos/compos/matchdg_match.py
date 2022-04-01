@@ -124,7 +124,7 @@ class MatchPair():
                 for batch_x_base_domain_curr_cls in tuple_batch_x_base_domain_curr_cls:
                     with torch.no_grad():
                         batch_x_base_domain_curr_cls = batch_x_base_domain_curr_cls.to(device)
-                        feat = phi(batch_x_base_domain_curr_cls)
+                        feat = phi.extract_feat(batch_x_base_domain_curr_cls)
                         list_base_feat.append(feat.cpu())
                 tensor_feat_base_domain_curr_cls = torch.cat(list_base_feat)   # base domain features
 
@@ -136,7 +136,7 @@ class MatchPair():
                     for batch_feat in tuple_x_batch_curr_domain_curr_cls:
                         with torch.no_grad():
                             batch_feat = batch_feat.to(device)
-                            out = phi(batch_feat)
+                            out = phi.extract_feat(batch_feat)
                             list_feat_x_curr_domain_curr_cls.append(out.cpu())
                     tensor_feat_curr_domain_curr_cls = torch.cat(list_feat_x_curr_domain_curr_cls)
                     # feature through inference network for the current domain of class y_c

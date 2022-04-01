@@ -42,7 +42,8 @@ class MatchCtrErm(MatchAlgoBase):
         if (epoch + 1) % self.epos_per_match == 0:
             self.mk_match_tensor(epoch)
 
-        inds_shuffle = torch.randperm(self.tensor_ref_domain2each_domain_x.size(0))
+        inds_shuffle = torch.randperm(
+            self.tensor_ref_domain2each_domain_x.size(0))
         # NOTE: match tensor size: N(ref domain size) * #(train domains) * (image size: c*h*w)
         # self.tensor_ref_domain2each_domain_x[inds_shuffle] shuffles the match tensor at the first dimension
         tuple_tensor_refdomain2each = torch.split(self.tensor_ref_domain2each_domain_x[inds_shuffle],
@@ -109,7 +110,8 @@ class MatchCtrErm(MatchAlgoBase):
                 # loss_erm_match_tensor = F.cross_entropy(batch_feat_ref_domain2each, batch_ref_domain2each_y.long()).to(self.device)
                 # FIXME: check if batch_ref_domain2each_y is continuous number which means it is at its initial value, not yet filled
                 # FIMXE: shall we leave batch_ref_domain2each_y scalar so it takes less memory?
-                loss_erm_match_tensor = self.phi.cal_loss(batch_tensor_ref_domain2each, batch_ref_domain2each_y.long())
+                loss_erm_match_tensor = self.phi.cal_loss(batch_tensor_ref_domain2each,
+                                                          batch_ref_domain2each_y.long())
 
             # Creating tensor of shape (domain size, total domains, feat size )
             # The match tensor's first two dimension [(Ref domain size) * (# train domains)] has been clamped together to get features extracted through self.phi

@@ -84,6 +84,10 @@ class ModelDIVA4Match(ModelDIVA):
         q_zd, zd_q, q_zx, zx_q, q_zy, zy_q = self.encoder(x)
         return q_zy.mean
 
+    def cal_loss(self, tensor_x, tensor_y, tensor_d):
+        loss, *_ = self.forward(tensor_x, tensor_y, tensor_d)
+        return loss
+
 
 def test_fun():
     from libdg.compos.vae.utils_request_chain_builder import RequestVAEBuilderCHW, VAEChainNodeGetter
