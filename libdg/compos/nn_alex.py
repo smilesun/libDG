@@ -78,6 +78,10 @@ class AlexNetNoLastLayer(AlexNetBase):
         super().__init__(flag_pretrain)
         self.net_torch_alex.classifier[6] = LayerId()
 
+    def extract_feat(self, x):
+        return self.net_torch_alex(x)
+
+
 def test_AlexNetConvClassif():
     import torch
     model = AlexNetNoLastLayer(True)

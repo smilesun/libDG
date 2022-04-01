@@ -3,7 +3,7 @@ from libdg.algos.observers.b_obvisitor import ObVisitor
 from libdg.algos.msels.c_msel_oracle import MSelOracleVisitor
 from libdg.algos.msels.c_msel import MSelTrLoss
 from libdg.algos.trainers.train_matchdg import TrainerMatchDG
-from libdg.models.model_diva import ModelDIVA
+from libdg.models.model_diva import ModelDIVA4Match
 from libdg.models.wrapper_matchdg import ModelWrapMatchDGLogit
 from libdg.utils.utils_cuda import get_device
 from libdg.compos.vae.utils_request_chain_builder import VAEChainNodeGetter
@@ -39,9 +39,10 @@ class NodeAlgoBuilderMatchDGDIVA(NodeAlgoBuilder):
 
 def get_ctr_model_erm_creator(args, task):
     def fun_build_alex_erm():
+        # ERM model only need to return loss, which will be added to the erm-phase-ctr loss
         request = RequestVAEBuilderCHW(task.isize.c, task.isize.h, task.isize.w)
         node = VAEChainNodeGetter(request)()
-        model = ModelDIVA(node,
+        model = ModelDIVA4Match(node,
                           zd_dim=args.zd_dim, zy_dim=args.zy_dim,
                           zx_dim=args.zx_dim,
                           list_str_y=task.list_str_y,
@@ -55,20 +56,20 @@ def get_ctr_model_erm_creator(args, task):
 
     def fun_build_alex_ctr():
         """
-        Constrastive learning
+        Constrastive learning: the model(erm/diva) is responsible for extracting causal features
         """
         request = RequestVAEBuilderCHW(task.isize.c, task.isize.h, task.isize.w)
         node = VAEChainNodeGetter(request)()
-        model = ModelDIVA(node,
-                          zd_dim=args.zd_dim, zy_dim=args.zy_dim,
-                          zx_dim=args.zx_dim,
-                          list_str_y=task.list_str_y,
-                          list_d_tr=task.list_domain_tr,
-                          gamma_d=args.gamma_d,
-                          gamma_y=args.gamma_y,
-                          beta_x=args.beta_x,
-                          beta_y=args.beta_y,
-                          beta_d=args.beta_d)
+        model = ModelDIVA4Match(node,
+                                zd_dim=args.zd_dim, zy_dim=args.zy_dim,
+                                zx_dim=args.zx_dim,
+                                list_str_y=task.list_str_y,
+                                list_d_tr=task.list_domain_tr,
+                                gamma_d=args.gamma_d,
+                                gamma_y=args.gamma_y,
+                                beta_x=args.beta_x,
+                                beta_y=args.beta_y,
+                                beta_d=args.beta_d)
         return model
 
     if task.isize.h > 100:

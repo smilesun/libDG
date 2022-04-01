@@ -91,7 +91,7 @@ class MatchCtrErm(MatchAlgoBase):
                 batch_tensor_ref_domain2each.shape[4])   # img_w
             # now batch_tensor_ref_domain2each first dim will not be batch_size!
             # batch_tensor_ref_domain2each.shape torch.Size([40, channel, 224, 224])
-            batch_feat_ref_domain2each = self.phi(batch_tensor_ref_domain2each)   # FIXME: change to extract_feature?
+            batch_feat_ref_domain2each = self.phi.extract_feat(batch_tensor_ref_domain2each)   #  FIXME: change to extract_feature?
             # batch_feat_ref_domain2each.shape torch.Size[40, 512]
             # torch.sum(torch.isnan(batch_tensor_ref_domain2each))
             # assert not torch.sum(torch.isnan(batch_feat_ref_domain2each))

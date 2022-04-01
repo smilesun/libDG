@@ -6,7 +6,9 @@ from libdg.utils.utils_classif import logit2preds_vpic, get_label_na
 
 class ModelWrapMatchDGLogit(AModelClassif):
     """
-    Wrap an arbitrary model with interface:cal_logit_y
+    Wrap an arbitrary ERM (deep-all) model with interface:
+        cal_logit_y
+        extract_feat
     """
     def __init__(self, net, list_str_y, list_str_d=None):
         super().__init__(list_str_y, list_str_d)
@@ -30,6 +32,10 @@ class ModelWrapMatchDGLogit(AModelClassif):
 
     def cal_loss(self, x, y, d=None):
         return self.net.cal_loss(x, y, d)
+
+    def extract_feat(self, tensor_x):
+        logit_y = self.net.cal_logit_y(tensor_x)  # FIXME: match other features instead of logit
+        return logit_y
 
     def forward(self, tensor_x):
         """
