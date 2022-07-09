@@ -17,7 +17,7 @@ class ConvNdBase(nn.Module):
                  padding=2, dilation=1, groups=1,
                  p_logvar_init=-3,  # FIXME: are performances sensitive to this as well?
                  p_pi=1.0,
-                 q_logvar_init=-5):
+                 q_logvar_init=1):
         super().__init__()
         if in_channels % groups != 0:
             raise ValueError('in_channels must be divisible by groups')
